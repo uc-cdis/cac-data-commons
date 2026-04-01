@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   AppShell,
@@ -39,6 +37,10 @@ import {
   IconCheck,
 } from '@tabler/icons-react';
 import { useM3Chat, type ChatMessage } from '../../hooks/useM3Chat';
+import { useDeepCompareCallback, useDeepCompareEffect } from 'use-deep-compare';
+import { Response } from '@/components/ai/mantine';
+import { ReasoningView } from '@/components/ai/mantine/ReasoningView';
+import { ReasoningUIPart } from 'ai';
 
 // ---------------------------------------------------------------------------
 // Model options — update to match what copilot.m3aicommons.org accepts
@@ -262,6 +264,9 @@ function MessageBubble({
               </Group>
             );
           }
+         if ( part.type === 'reasoning' ) {
+            return <ReasoningView part={part as ReasoningUIPart} key={i} />;
+          }
           if (part.type === 'tool-invocation' && part.toolInvocation) {
             return (
               <ToolCallBadge
@@ -274,13 +279,19 @@ function MessageBubble({
             );
           }
           if (part.type === 'text' && part.text) {
-            return <RichText key={i} content={part.text} />;
+            return (
+              <Response key={i} mode="streaming">
+                {part.text}
+              </Response>
+            );
           }
           return null;
         })}
       </>
     ) : (
-      <RichText content={content} />
+      <Response mode="streaming">
+        {content}
+      </Response>
     );
 
   return (
@@ -355,13 +366,10 @@ function ActiveChat({
     body: { model, ...extraBody },
   });
 
-  console.log("messages", messages);
-
-
   const [input, setInput] = useState('');
   const viewport = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (messages.length === 0) return;
     const firstUser = messages.find((m) => m.role === 'user');
     const title = firstUser
@@ -371,7 +379,7 @@ function ActiveChat({
     onMessagesChange(thread.id, messages, title);
   }, [messages, thread.title, thread.id, onMessagesChange]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     viewport.current?.scrollTo({
       top: viewport.current.scrollHeight,
       behavior: 'smooth',
@@ -546,13 +554,13 @@ export function M3ChatShell({ apiUrl, extraBody }: M3ChatShellProps) {
 
   const activeThread = threads.find((t) => t.id === activeId) ?? threads[0];
 
-  const handleNew = useCallback(() => {
+  const handleNew = useDeepCompareCallback(() => {
     const t = newThread(model);
     setThreads((prev) => [t, ...prev]);
     setActiveId(t.id);
   }, [model]);
 
-  const handleDelete = useCallback(
+  const handleDelete = useDeepCompareCallback(
     (id: string) => {
       setThreads((prev) => {
         const next = prev.filter((t) => t.id !== id);
@@ -568,7 +576,7 @@ export function M3ChatShell({ apiUrl, extraBody }: M3ChatShellProps) {
     [activeId, model],
   );
 
-  const handleMessagesChange = useCallback(
+  const handleMessagesChange = useDeepCompareCallback(
     (threadId: string, messages: ChatMessage[], title: string) => {
       setThreads((prev) =>
         prev.map((t) => (t.id === threadId ? { ...t, messages, title } : t)),
@@ -711,5 +719,7 @@ export function M3ChatShell({ apiUrl, extraBody }: M3ChatShellProps) {
     </AppShell>
   );
 }
+
+M3ChatShell.whyDidYouRender = true;
 
 export default M3ChatShell;
