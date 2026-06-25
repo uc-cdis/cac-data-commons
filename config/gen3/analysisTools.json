@@ -27,7 +27,7 @@
       "image": "/images/apps/data_model_generator.png",
       "description": "AI tool to assist with data curation and harmonization. This model is a fined-tuned LoRA layer based on Llama-3.1-8B that is optimized for the specific task of generating structured data models in JSON format from a dump of tabular data files.",
       "loginRequired": false,
-      "href": "/embedded/schema-generator.m3aicommons.org?type=gradio",
+      "href": "/embedded/uc-ctds-llama-data-model-generator-demo.hf.space?type=gradio",
       "btnText": "Run Model"
     }
   ]
