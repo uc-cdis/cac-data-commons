@@ -3,7 +3,7 @@ import {
   Image,
   SimpleGrid,
   Stack,
-  UnstyledButton,
+
 } from '@mantine/core';
 import {
   getNavPageLayoutPropsFromConfig,
@@ -19,9 +19,9 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'M3 AI Commons',
+        title: 'Genomic AI Commons',
         content: 'Landing page',
-        key: 'm3-landing-page',
+        key: 'gac-landing-page',
       }}
     >
       <div className="flex flex-col w-full">
@@ -39,7 +39,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
 
             <div className="relative z-10">
               <div className="justify-start text-white text-4xl font-bold font-['Poppins']">
-                M3 AI Commons
+                 AI Commons
               </div>
               <div className="justify-start text-white text-2xl font-semibold font-['Poppins'] my-4">
                 Powerful AI tools available alongside core data commons
@@ -47,7 +47,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
               </div>
               <div className="w-[1040px] h-20 justify-start">
                 <span className="text-white text-sm font-bold font-['Poppins']">
-                  The M3 AI commons
+                  The Genomic AI commons
                 </span>
                 <span className="text-white text-sm font-normal font-['Poppins']">
                   {' '}
@@ -55,7 +55,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
                   architecture for managing, analyzing, and sharing data and AI
                   resources supporting: multi-modal AI embeddings, AI
                   inferencing, building AI models, and natural language
-                  interactions. One over-arching mission of the M3 AI Commons is
+                  interactions. One over-arching mission of the Genomic AI Commons is
                   to make readily accessible small to midscale AI models trained
                   over high-quality data leveraging affordable compute resources
                   without sacrificing performance comparable to high-cost
@@ -69,7 +69,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
                 }
               >
                 <div className="justify-start text-white text-sm font-semibold font-['Poppins'] leading-4">
-                  Explore M3 AI Commons
+                  Explore Genomic AI Commons
                 </div>
               </UnstyledButton>
               --- */ }
@@ -81,14 +81,14 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
             <div className="w-16 h-16">
               <Image
                 src="/icons/M3-Logomark-RGB.svg"
-                alt="M3 AI Commons Logo"
+                alt="Genomic AI Commons Logo"
                 w="auto"
                 fit="contain"
                 height={64}
               />
             </div>
             <div className="text-center justify-start text-[#111111] text-2xl font-semibold font-['Poppins']">
-              AI Commons Core Services
+              Genomic AI Commons Core Services
             </div>
             <SimpleGrid
               cols={3}
@@ -103,7 +103,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
               />
               <InfoCard
                 title="Embedding Service"
-                description="M3 AI Commons embedding-centric approach, including vector store and API, in tandem with Gen3 narrow-middle architecture provides flexible scalability."
+                description="Genomic AI Commons embedding-centric approach, including vector store and API, in tandem with Gen3 narrow-middle architecture provides flexible scalability."
                 imgSrc="/icons/Icon-ES.svg"
               />
               <InfoCard
@@ -127,48 +127,6 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
                 imgSrc="/icons/Icon-AI.svg"
               />
             </SimpleGrid>
-          </div>
-        </div>
-        <div className="bg-white">
-          <div
-            className="relative h-[360px]"
-            style={{
-              backgroundImage: 'url(/images/mesh-1430107_1920_top.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            {/* Overlay for opacity */}
-            <div className="absolute inset-0 bg-white opacity-[.45] z-5"></div>
-            <div className="flex justify-between align-middle px-20 py-16 relative z-10">
-              <div className="flex flex-col justify-center">
-              <div className="w-[32rem]">
-                <span className="text-[#002a3a] text-4xl font-normal font-['Poppins'] leading-snug">
-                  Learn More About <br />
-                  the University of Chicago
-                </span>
-                <span className="text-[#002a3a] text-4xl font-bold font-['Poppins'] leading-snug">
-                  {' '}
-                  <br />
-                  M3 Meshes of Midscale Models Initiative
-                </span>
-              </div>
-              </div>
-              <Stack align="stretch" justify="center" gap="md">
-                <ArrowLink
-                  href="https://m3initiative.uchicago.edu/"
-                  text="M3 Initiative"
-                />
-                <ArrowLink
-                  href="https://m3initiative.uchicago.edu/ai-models/"
-                  text="M3 AI Models"
-                />
-                <ArrowLink
-                  href="https://m3initiative.uchicago.edu/ai-tools/"
-                  text="M3 AI Tools"
-                />
-              </Stack>
-            </div>
           </div>
         </div>
       </div>
