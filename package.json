@@ -1,19 +1,20 @@
 {
   "name": "@gen3/commons-portal-app-base",
-  "version": "0.12.36",
+  "version": "0.12.56",
   "private": "true",
   "engines": {
-    "npm": ">=11.9.0",
-    "node": ">=24.14.0"
+    "npm": ">=11.16.0",
+    "node": ">=24.18.0"
   },
   "scripts": {
     "lint": "next lint",
     "lint-fix": "next lint --fix",
     "predev": " NODE_ENV=development npm run build:middlewarePaths",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:turbopack": "next dev",
     "prebuild": "NODE_ENV=production npm run build:middlewarePaths",
-    "build": "next build",
-    "build:volume": "npm run build:middlewarePathsMatchAll && next build",
+    "build": "next build --webpack",
+    "build:volume": "npm run build:middlewarePathsMatchAll && next build --webpack",
     "start": "next start",
     "setupCommons": "npm run buildColors && npm run getSchema && npm run getDRSToHostname && npm run buildIcons && npm run build:middlewarePaths",
     "build:colors": "node ./node_modules/@gen3/toolsff/dist/buildColors.esm.js --themeFile=config/$npm_config_commons/colors.json --out=config/$npm_config_commons",
@@ -21,27 +22,34 @@
     "build:middlewarePaths": "if [ ! -f ./node_modules/@gen3/toolsff/dist/scanSitePaths.esm.js ]; then printf \"\\033[31mError: @gen3/toolsff not built (missing dist file). Run: npm run build:tools\\033[0m\\n\"; exit 1; else node ./node_modules/@gen3/toolsff/dist/scanSitePaths.esm.js || (printf \"\\033[31mError: @gen3/toolsff scanSitePaths failed. See above message\\033[0m\\n\" && exit 1); fi",
     "build:middlewarePathsMatchAll": "if [ ! -f ./node_modules/@gen3/toolsff/dist/scanSitePaths.esm.js ]; then printf \"\\033[31mError: @gen3/toolsff not built (missing dist file). Run: npm run build:tools\\033[0m\\n\"; exit 1; else node ./node_modules/@gen3/toolsff/dist/scanSitePaths.esm.js --forceMatchAll || (printf \"\\033[31mError: @gen3/toolsff scanSitePaths failed. See above message\\033[0m\\n\" && exit 1); fi",
     "getSchema": "node ./node_modules/@gen3/toolsff/dist/getSchema.esm.js --out=config/",
-    "getDRSToHostname": "node ./node_modules/@gen3/toolsff/dist/getDRSToHostname.esm.js --out=config/"
+    "getDRSToHostname": "node ./node_modules/@gen3/toolsff/dist/getDRSToHostname.esm.js --out=config/",
+    "build:jupyterlite:free": "bash ./node_modules/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh free ./builds",
+    "build:jupyterlite:remote": "bash ./node_modules/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh remote ./builds",
+    "build:jupyterlite:assets": "bash ./node_modules/@gen3/workspaces/dist/jupyterlite-builds/scripts/sync-jupyter-assets-into-package.sh ./builds",
+    "build:jupyterlite": "npm run build:jupyterlite:free && npm run build:jupyterlite:remote && npm run build:jupyterlite:assets",
+    "build:docker": "docker build -t gen3:mc2dp -f Dockerfile.production ."
   },
   "dependencies": {
     "@datadog/browser-rum": "^6.22.0",
     "@fontsource/montserrat": "^5.2.8",
     "@fontsource/poppins": "^5.2.7",
     "@fontsource/source-sans-pro": "^5.2.5",
-    "@gen3/core": "0.12.36",
-    "@gen3/frontend": "0.12.36",
-    "@mantine/core": "^8.3.15",
-    "@mantine/dates": "^8.3.15",
-    "@mantine/form": "^8.3.15",
-    "@mantine/hooks": "^8.3.15",
-    "@mantine/modals": "^8.3.15",
-    "@mantine/notifications": "^8.3.15",
+    "@gen3/core": "0.12.56",
+    "@gen3/frontend": "0.12.56",
+    "@gen3/workspaces": "0.12.56",
+    "@mantine/core": "^9.4.0",
+    "@mantine/dates": "^9.4.0",
+    "@mantine/form": "^9.4.0",
+    "@mantine/hooks": "^9.4.0",
+    "@mantine/modals": "^9.4.0",
+    "@mantine/notifications": "^9.4.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
-    "@next/mdx": "^15.5.9",
+    "@next/mdx": "^16.2.12",
     "idb": "^8.0.3",
     "jsonpath-plus": "^10.3.0",
     "lodash": "^4.17.23",
+    "mantine-react-table-open": "^9.0.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.5.0",
@@ -53,7 +61,8 @@
   },
   "devDependencies": {
     "@axe-core/react": "^4.10.2",
-    "@gen3/toolsff": "0.12.36",
+    "@gen3/toolsff": "0.12.56",
+    "@graphiql/react": "^0.37.4",
     "@next/eslint-plugin-next": "^15.5.9",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.10",
@@ -76,10 +85,10 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.0",
-    "graphiql": "^5.2.2",
+    "graphiql": "^5.2.3",
     "jest-fixed-jsdom": "^0.0.10",
     "msw": "^2.11.5",
-    "next": "^15.5.9",
+    "next": "^16.2.12",
     "postcss": "^8.5.6",
     "postcss-import": "^16.1.1",
     "postcss-loader": "^8.2.0",
@@ -95,14 +104,10 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1"
   },
-  "overrides": {
-    "mantine-react-table": {
-      "@mantine/core": "^8.3.15",
-      "@mantine/hooks": "^8.3.15",
-      "@mantine/dates": "^8.3.15",
-      "@mantine/form": "^8.3.15",
-      "@mantine/modals": "^8.3.15",
-      "@mantine/notifications": "^8.3.15"
-    }
+  "allowScripts": {
+    "unrs-resolver": true,
+    "fsevents": true,
+    "msw": true,
+    "sharp": true
   }
 }

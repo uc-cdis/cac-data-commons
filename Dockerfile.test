@@ -1,11 +1,11 @@
 # docker build -t ff .
 # docker run -p 3000:3000 -it ff
 # Build stage
-FROM --platform=$BUILDPLATFORM node:24.14.0-trixie-slim AS builder
+FROM --platform=$BUILDPLATFORM node:24.18.0-trixie-slim AS builder
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
-
+ARG TARGETARCH
 WORKDIR /ci
 
 # Copy dependency files first for better caching
@@ -17,6 +17,18 @@ RUN npm config set fetch-retries 5 && \
     npm config set fetch-retry-maxtimeout 120000 && \
     npm ci && \
     npm cache clean --force
+
+# Install Python and micromamba for JupyterLite build (cached independently of source changes)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 python3-venv curl bzip2 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then MICROMAMBA_ARCH="linux-64"; \
+    elif [ "$ARCH" = "aarch64" ]; then MICROMAMBA_ARCH="linux-aarch64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    curl -Ls https://micro.mamba.pm/api/micromamba/${MICROMAMBA_ARCH}/latest | tar -xvj -C /usr/local/bin --strip-components=1 bin/micromamba && \
+    chmod +x /usr/local/bin/micromamba
 
 # Copy necessary config files
 COPY next.config.js tsconfig.json tailwind.config.js postcss.config.js ./
@@ -30,34 +42,42 @@ COPY ./start.sh ./
 
 ENV NODE_ENV=test
 
-# Build and prune
-RUN npm run build && \
-    npm prune --omit=dev;
+# Build JupyterLite static assets (outputs to public/ before Next.js build)
+RUN npm run build:jupyterlite
+
+# Build
+RUN npm run build
 
 # Production stage
-FROM node:24.14.0-trixie-slim AS runner
+FROM node:24.18.0-trixie-slim AS runner
 
 WORKDIR /ci
 
 RUN addgroup --system --gid 1001 nextjs && \
     adduser --system --uid 1001 nextjs
 
-# Copy only production dependencies
-COPY --from=builder --chown=nextjs:nextjs /ci/package.json ./
-COPY --from=builder --chown=nextjs:nextjs /ci/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nextjs /ci/config ./config
-COPY --from=builder --chown=nextjs:nextjs /ci/.next ./.next
-COPY --from=builder --chown=nextjs:nextjs /ci/public ./public
+COPY --from=builder --chown=nextjs:nextjs /ci/.next/standalone ./.next/standalone
+COPY --from=builder --chown=nextjs:nextjs /ci/.next/static ./.next/standalone/.next/static
 COPY --from=builder --chown=nextjs:nextjs /ci/start.sh ./start.sh
+COPY --from=builder --chown=nextjs:nextjs /ci/public ./public
+COPY --from=builder --chown=nextjs:nextjs /ci/config ./config
+COPY --from=builder --chown=nextjs:nextjs /ci/jupyter-workspaces ./jupyter-workspaces
 
-RUN mkdir -p .next/cache/images && \
+RUN mkdir -p .next/standalone/.next/cache/images && \
+    chmod -R 777 .next/standalone/.next/cache && \
+    chown -R nextjs:nextjs .next/standalone/.next/cache && \
     chmod +x start.sh && \
-    chown -R nextjs:nextjs .next/cache
+    chown -R nextjs:nextjs start.sh && \
+    rm -rf .next/standalone/config && \
+    cd .next/standalone && \
+    ln -s ../../config ./config && \
+    ln -s ../../public ./public
 
 USER nextjs:nextjs
 
 ENV NODE_ENV=test \
     PORT=3000 \
+    HOSTNAME=0.0.0.0 \
     NEXT_TELEMETRY_DISABLED=1
 
 CMD ["sh", "./start.sh"]
