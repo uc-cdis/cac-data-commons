@@ -2,8 +2,6 @@ import React from 'react';
 import {
   Image,
   SimpleGrid,
-  Stack,
-
 } from '@mantine/core';
 import {
   getNavPageLayoutPropsFromConfig,
@@ -12,7 +10,6 @@ import {
 } from '@gen3/frontend';
 import { GetServerSideProps } from 'next';
 import InfoCard from '@/components/InfoCard';
-import ArrowLink from '@/components/ArrowLink';
 
 const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   return (
