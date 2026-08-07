@@ -1,13 +1,23 @@
 {
   "tools": [
     {
-      "title": "GDC QAG",
+      "title": "GDC QAG (v2)",
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag.png",
       "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC.",
-      "loginRequired": false,
-      "href": "/embedded/m3aicommons.org/qag",
+      "loginRequired": true,
+      "href": "/embedded/m3aicommons.org/qag/v2",
+      "btnText": "Run Model"
+    },
+    {
+      "title": "GDC QAG (v3)",
+      "type": "application",
+      "icon": "/images/apps/icons/ai_spark.svg",
+      "image": "/images/apps/gdc_qag.png",
+      "description": "GDC QAG with reduced token usage and user-gated plan approval and execution.",
+      "loginRequired": true,
+      "href": "/embedded/m3aicommons.org/qag/v3",
       "btnText": "Run Model"
     },
     {
@@ -16,7 +26,7 @@
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/cohort_copilot_image.png",
       "description": " Construct GDC cohorts using natural language queries describing the cases you're looking for. The resulting cohorts can be used with standard GDC utilities and APIs.",
-      "loginRequired": false,
+      "loginRequired": true,
       "href": "/embedded/m3aicommons.org/cohort-copilot",
       "btnText": "Run Model"
     },
