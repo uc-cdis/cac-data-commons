@@ -26,7 +26,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
           <div
             className="p-20 relative"
             style={{
-              backgroundImage: 'url(/images/frequency-wave-7776034_1920-3.png)',
+              backgroundImage: 'url(/images/frequency-wave-7776034_1920-gdc.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
