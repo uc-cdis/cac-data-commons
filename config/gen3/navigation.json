@@ -2,15 +2,15 @@
   "navigation": {
     "hideUnauthorizedLinks": false,
     "classNames": {
-      "root": "pl-1 mr-6 bg-base-max text-primary opacity-100 hover:opacity-100 data-disabled:opacity-35 data-disabled:hover:text-primary data-disabled:hover:opacity-35",
+      "root": "pl-1 bg-base-max text-primary opacity-100 hover:opacity-100 data-disabled:opacity-35 data-disabled:hover:text-primary data-disabled:hover:opacity-35",
       "item": "py-2 px-4 hover:bg-base-lightest hover:text-base-contrast",
       "navigationPanel": "bg-base-max text-primary",
       "icon": "data-disabled:opacity-50"
     },
     "logo": {
-      "src": "/icons/M3-Logomark-RGB.svg",
-      "width": 100,
-      "height": 48,
+      "src": "/icons/GAC-Text-RGB.svg",
+      "width": 120,
+      "height": 80,
       "href": "/"
     },
     "items": [
@@ -33,20 +33,28 @@
         "tooltip": "Gen3 workspaces are secure data analysis environments in the cloud that can access data from one or more data resources."
       },
       {
-        "icon": "gen3:profile",
-        "href": "/Profile",
-        "name": "Profile",
-        "tooltip": "Create API keys for programmatic data access, and review your authorization privileges to datasets and services."
-      },
-      {
         "icon": "gen3:aisearch",
         "href": "/Chat",
         "name": "Chat",
         "tooltip": "Ask questions about the data in natural language using an AI assistant."
+      },
+      {
+        "icon": "gen3:profile",
+        "href": "/Profile",
+        "name": "Profile",
+        "tooltip": "Create API keys for programmatic data access, and review your authorization privileges to datasets and services."
       }
     ]
   },
   "topBar": {
+    "classNames": {
+      "root": "bg-accentCool-light",
+      "divider": "border-white"
+    },
+    "itemClassnames": {
+      "label": "text-white",
+      "rightIcon": "text-white"
+    },
     "items": [
       {
         "rightIcon": "gen3:upload",

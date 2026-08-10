@@ -22,23 +22,24 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
       }}
     >
       <div className="flex flex-col w-full">
-        <div className="w-full h-[424px] relative bg-black">
+        <div className="w-full h-[449px] relative bg-gradient-to-r from-accentCool-dark to-accentCool-darker">
           <div
-            className="p-20 relative"
+            className="px-[8em] py-24 relative h-[449px] z-4"
             style={{
-              backgroundImage: 'url(/images/frequency-wave-7776034_1920-gdc.png)',
+              backgroundImage:
+                'url(/images/frequency-wave-7776034_1920-gdc.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
             {/* Overlay for opacity */}
-            <div className="absolute inset-0 bg-black opacity-[.45] z-5"></div>
+            <div className="absolute inset-0 z-5"></div>
 
             <div className="relative z-10">
               <div className="justify-start text-white text-4xl font-bold font-['Poppins']">
-                 AI Commons
+                Genomic AI Commons
               </div>
-              <div className="justify-start text-white text-2xl font-semibold font-['Poppins'] my-4">
+              <div className="justify-start text-white text-2xl font-semibold font-['Poppins'] mt-3 mb-8">
                 Powerful AI tools available alongside core data commons
                 capabilities.
               </div>
@@ -52,14 +53,14 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
                   architecture for managing, analyzing, and sharing data and AI
                   resources supporting: multi-modal AI embeddings, AI
                   inferencing, building AI models, and natural language
-                  interactions. One over-arching mission of the Genomic AI Commons is
-                  to make readily accessible small to midscale AI models trained
-                  over high-quality data leveraging affordable compute resources
-                  without sacrificing performance comparable to high-cost
-                  frontier models.
+                  interactions. One over-arching mission of the Genomic AI
+                  Commons is to make readily accessible small to midscale AI
+                  models trained over high-quality data leveraging affordable
+                  compute resources without sacrificing performance comparable
+                  to high-cost frontier models.
                 </span>
               </div>
-              { /*--
+              {/*--
               <UnstyledButton
                 className={
                   'mt-10 px-4 py-3 bg-white/25 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5'
@@ -69,29 +70,29 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
                   Explore Genomic AI Commons
                 </div>
               </UnstyledButton>
-              --- */ }
+              --- */}
             </div>
           </div>
         </div>
-        <div className="bg-[#f3f6f9] px-20 py-10 flex flex-col">
+        <div className="bg-[#f3f6f9] h-full px-[7.8em] py-[4.15em] flex flex-col">
           <div className="flex flex-col justify-center items-center">
-            <div className="w-16 h-16">
+            <div className="w-[5.8em] h-8">
               <Image
-                src="/icons/M3-Logomark-RGB.svg"
+                src="/icons/GAC-Text-RGB.svg"
                 alt="Genomic AI Commons Logo"
                 w="auto"
                 fit="contain"
-                height={64}
+                height={82}
               />
             </div>
             <div className="text-center justify-start text-[#111111] text-2xl font-semibold font-['Poppins']">
-              Genomic AI Commons Core Services
+              Core Services
             </div>
             <SimpleGrid
               cols={3}
               spacing="xl"
               verticalSpacing="xl"
-              className="mt-10"
+              className="mt-8"
             >
               <InfoCard
                 title="FAIR Data"
