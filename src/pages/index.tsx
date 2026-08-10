@@ -24,7 +24,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
       <div className="flex flex-col w-full">
         <div className="w-full h-[449px] relative bg-gradient-to-r from-accentCool-dark to-accentCool-darker">
           <div
-            className="px-[8em] py-24 relative h-[449px]"
+            className="px-[8em] py-24 relative h-[449px] z-4"
             style={{
               backgroundImage:
                 'url(/images/frequency-wave-7776034_1920-gdc.png)',
@@ -74,7 +74,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
             </div>
           </div>
         </div>
-        <div className="bg-[#f3f6f9] px-[7.8em] py-[4.15em] flex flex-col">
+        <div className="bg-[#f3f6f9] h-full px-[7.8em] py-[4.15em] flex flex-col">
           <div className="flex flex-col justify-center items-center">
             <div className="w-[5.8em] h-8">
               <Image
