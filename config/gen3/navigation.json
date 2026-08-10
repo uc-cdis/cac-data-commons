@@ -8,9 +8,9 @@
       "icon": "data-disabled:opacity-50"
     },
     "logo": {
-      "src": "/icons/M3-Logomark-RGB.svg",
-      "width": 100,
-      "height": 48,
+      "src": "/icons/GAC-Text-RGB.svg",
+      "width": 120,
+      "height": 80,
       "href": "/"
     },
     "items": [
@@ -41,6 +41,14 @@
     ]
   },
   "topBar": {
+    "classNames": {
+      "root": "bg-accentCool-light",
+      "divider": "border-white"
+    },
+    "itemClassnames": {
+      "label": "text-white",
+      "rightIcon": "text-white"
+    },
     "items": [
       {
         "rightIcon": "gen3:upload",
