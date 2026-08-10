@@ -9,6 +9,9 @@
     "/Profile": {
       "loginRequired": true
     },
+    "/Chat": {
+      "loginRequired": true
+    },
     "*": {
       "loginRequired": false
     }

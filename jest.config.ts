@@ -2,7 +2,7 @@ import type { JestConfigWithTsJest } from 'ts-jest';
 
 const jestConfig: JestConfigWithTsJest = {
   preset: 'ts-jest',
-  rootDir: __dirname,
+  rootDir: '.',
   roots: ['<rootDir>/src'],
   moduleNameMapper: {
     '^@/components(.*)$': '<rootDir>/src/components/$1',

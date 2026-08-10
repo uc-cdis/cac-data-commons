@@ -1,6 +1,9 @@
 import { parse } from 'cookie';
-import { decodeJwt, importSPKI, JWTPayload, jwtVerify } from 'jose';
-import { fetchJWTKey } from '@gen3/frontend/server';
+import { decodeJwt, JWTPayload, jwtVerify } from 'jose';
+import {
+  getVerificationKey,
+  invalidateVerificationKey,
+} from './verificationKey';
 
 export const isExpired = (value: number) => value * 1000 < Date.now();
 export interface JWTPayloadAndUser extends JWTPayload {
@@ -37,17 +40,24 @@ export async function getLoginStatus(cookie?: string): Promise<LoginStatus> {
   try {
     const accessToken = getAccessToken(cookie);
     if (accessToken) {
-      const jwtKey = await fetchJWTKey(process.env.NODE_ENV === 'production');
+      const publicKey = await getVerificationKey();
 
-      if (!jwtKey) {
+      if (!publicKey) {
         return {
           error: 'No JWT Key to verify token',
           status: 'not present',
         };
       }
       // validate the token
-      const publicKey = await importSPKI(jwtKey, 'RS256');
-      await jwtVerify(accessToken, publicKey);
+      try {
+        await jwtVerify(accessToken, publicKey);
+      } catch (error) {
+        // The key is cached, and a rotation is the only reason a token that used to
+        // verify would stop. Drop it so the next call refetches, rather than turning
+        // a rotation into 15 minutes of everyone being logged out.
+        invalidateVerificationKey();
+        throw error;
+      }
       const decodedAccessToken = decodeJwt(accessToken) as JWTPayloadAndUser;
       return {
         issued: decodedAccessToken.iat,

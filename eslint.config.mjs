@@ -9,14 +9,19 @@ import reactRecommended from 'eslint-plugin-react/configs/recommended.js';
 
 export default [
   reactRecommended,
+  react.configs.flat['jsx-runtime'],
   jsLint.configs.recommended,
   ...tsLint.configs.recommended,
 
   {
     ignores: [
       '.nx/**/*',
+      '.next/**/*',
+      'out/**/*',
+      'coverage/**/*',
       '**/build/*',
       '**/*.css',
+      'next-env.d.ts',
       'setupTests.ts',
       'node_modules/*',
     ],
