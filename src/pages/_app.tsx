@@ -32,7 +32,18 @@ import { loadContent } from '@/lib/content/loadContent';
 import Loading from '../components/Loading';
 import DatadogInit from '@/components/DatadogInit';
 
-if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+import { ChatRuntimeProvider } from '@/features/chat/ChatRuntimeProvider';
+
+// Opt-in rather than on for every dev page load: axe replaces React.createElement
+// process-wide, so every element the app creates pays a wrapper, and its scheduler runs
+// whole-document audits that block the main thread for hundreds of ms on a large DOM.
+// That is invisible on a static page and very visible in chat, where the tree re-renders
+// per streamed token. Turn it on with NEXT_PUBLIC_AXE=1 when doing accessibility work.
+if (
+  typeof window !== 'undefined' &&
+  process.env.NODE_ENV !== 'production' &&
+  process.env.NEXT_PUBLIC_AXE === '1'
+) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
   const ReactDOM = require('react-dom');
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -120,7 +131,9 @@ const Gen3App = ({
               modalsConfig={modalsConfig}
               protectedRoutesConfig={protectedRoutes}
             >
-              <Component {...pageProps} />
+              <ChatRuntimeProvider>
+                <Component {...pageProps} />
+              </ChatRuntimeProvider>
             </Gen3Provider>
           </MantineProvider>
         </Suspense>
