@@ -58,39 +58,12 @@ function parseArgs(raw: string): Record<string, unknown> | null {
 }
 
 /**
- * get_survival_data - and so far only that one - serializes its result as an MCP
- * content-block array, the same `[{type:"text",text}]` shape extractText already flattens
- * for the other two roles, except JSON-encoded into the string because AG-UI types tool
- * content as a string. Peel it at the one place that normalizes the wire rather than in that
- * tool's parser, so the raw RESULT panel stays readable and the next tool to start wrapping
- * needs no change. Anything else passes through untouched, which is what leaves run_query
- * and a denied approval's plain feedback text alone.
- *
- * Once only. The inner text is itself JSON, and that layer belongs to whoever renders it.
+ * get_survival_data JSON-encodes an MCP content-block array into its result string. Peel it
+ * once - anything else passes through untouched. Why here, and why no memo: see AGENTS.md.
  */
 function unwrapToolResult(content: string): string {
   if (!content.startsWith("[")) return content; // free reject: results are objects or prose
 
-  const hit = unwrapCache.get(content);
-  if (hit !== undefined) return hit;
-
-  const out = peelContentBlocks(content);
-  if (unwrapCache.size >= UNWRAP_CACHE_MAX) {
-    // Map iterates in insertion order, so this drops the oldest.
-    const oldest = unwrapCache.keys().next().value;
-    if (oldest !== undefined) unwrapCache.delete(oldest);
-  }
-  unwrapCache.set(content, out);
-  return out;
-}
-
-// toChatMessage re-runs over the whole transcript on every streamed token, so a wrapped
-// result would otherwise re-parse per token for the life of the conversation. Keyed on the
-// string rather than the message, which the dev-mode structuredClone would defeat.
-const UNWRAP_CACHE_MAX = 64;
-const unwrapCache = new Map<string, string>();
-
-function peelContentBlocks(content: string): string {
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
@@ -99,10 +72,6 @@ function peelContentBlocks(content: string): string {
   }
   if (!Array.isArray(parsed) || parsed.length === 0) return content;
 
-  // every, not extractText's filter. Dropping an unrecognised part is right for multimodal
-  // user content and wrong here - a half-decoded result is worse than an undecoded one, so
-  // an array we only partly recognise gets handed back whole. Extra keys are ignored; the
-  // envelope carries `annotations` and `meta` we have no use for.
   const texts: string[] = [];
   for (const part of parsed) {
     if (
