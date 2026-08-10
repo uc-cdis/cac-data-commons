@@ -39,10 +39,9 @@ export function InterruptCard({
   actions,
   decision,
 }: InterruptCardProps) {
-  const { onApprove, onDeny, answeredIds, submitting } = actions;
+  const { onApprove, onDeny, submitting } = actions;
   const entry = resolveInterruptRenderer(interrupt);
   const Body = entry?.Body ?? GenericInterruptBody;
-  const answered = answeredIds.has(interrupt.id);
 
   const [revision, setRevision] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -112,11 +111,7 @@ export function InterruptCard({
 
         {body}
 
-        {answered && !submitting ? (
-          <Text size="xs" c="dimmed" ta="right">
-            Recorded. Waiting on the other approvals before this can continue.
-          </Text>
-        ) : revision === null ? (
+        {revision === null ? (
           <Group justify="flex-end" gap="xs">
             {/* Deny and Edit plan are hidden for now.
             <Button

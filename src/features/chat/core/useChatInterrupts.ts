@@ -13,11 +13,10 @@ import { reportError } from "./errors";
 export interface UseChatInterrupts {
   /** Open approvals. Blocks every run until answered. */
   interrupts: ChatInterrupt[];
-  /** Accepted approvals, oldest first. */
+  /** Decided approvals, oldest first. */
   resolved: ResolvedInterrupt[];
-  answeredIds: string[];
   submitting: boolean;
-  /** Fires the resume once every open interrupt is answered. */
+  /** Records the decision and fires the resume. */
   answer: (id: string, decision: InterruptDecision) => void;
   /** Stable across renders; persistence depends on it. */
   getResolved: () => ResolvedInterrupt[];
@@ -54,36 +53,27 @@ export function useChatInterrupts(
     agent.pendingInterrupts.map(toChatInterrupt),
   );
   const [resolved, setResolved] = useState<ResolvedInterrupt[]>([]);
-  const [answeredIds, setAnsweredIds] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Read in the tick the last answer lands, before state catches up.
-  const answersRef = useRef<Record<string, InterruptDecision>>({});
-  // In flight until finalize says which stuck.
-  const submittedRef = useRef<ResolvedInterrupt[]>([]);
   const resolvedRef = useRef<ResolvedInterrupt[]>([]);
-
   const putResolved = useCallback((next: ResolvedInterrupt[]) => {
     resolvedRef.current = next;
     setResolved(next);
   }, []);
-  // Not state: two fast clicks would answer the same interrupt twice.
+
   const submittingRef = useRef(false);
 
-  const resetAnswers = useCallback(() => {
-    answersRef.current = {};
+  const stopSubmitting = useCallback(() => {
     submittingRef.current = false;
-    setAnsweredIds([]);
     setSubmitting(false);
   }, []);
 
   // Leaves `resolved` alone - the next save writes it.
   const unarm = useCallback(() => {
     agent.pendingInterrupts = [];
-    resetAnswers();
-    submittedRef.current = [];
+    stopSubmitting();
     setInterrupts((prev) => (prev.length === 0 ? prev : []));
-  }, [agent, resetAnswers]);
+  }, [agent, stopSubmitting]);
 
   // [agent] only: runAgent snapshots subscribers, so a mid-run resubscribe is lost.
   useEffect(() => {
@@ -93,24 +83,9 @@ export function useChatInterrupts(
         setInterrupts((prev) => (prev.length === 0 ? prev : []));
       },
 
-      // Runs before useChatPersistence, which writes the row from this same event.
-      // params.interrupts, not the field - the applier hasn't written it yet.
-      onRunFinishedEvent(params) {
-        const stillOpen =
-          params.outcome === "interrupt"
-            ? new Set(params.interrupts.map((i) => i.id))
-            : new Set<string>();
-
-        // Came back open = the resume missed; keeping it would duplicate the card.
-        const accepted = submittedRef.current.filter((r) => !stillOpen.has(r.interrupt.id));
-        submittedRef.current = [];
-        if (accepted.length) putResolved([...resolvedRef.current, ...accepted]);
-      },
-
       // Fires on every terminal path; the only trustworthy read of the field.
       onRunFinalized() {
-        resetAnswers();
-        submittedRef.current = [];
+        stopSubmitting();
 
         const open = agent.pendingInterrupts;
         setInterrupts((prev) =>
@@ -119,7 +94,7 @@ export function useChatInterrupts(
       },
     });
     return () => sub.unsubscribe();
-  }, [agent, resetAnswers]);
+  }, [agent, stopSubmitting]);
 
   // Stale ids outlive setMessages and a threadId swap. Mid-run, use unarm().
   const clear = useCallback(() => {
@@ -127,12 +102,14 @@ export function useChatInterrupts(
     putResolved([]);
   }, [unarm, putResolved]);
 
-  const submit = useCallback(
-    (decisions: Record<string, InterruptDecision>) => {
+  const answer = useCallback(
+    (id: string, decision: InterruptDecision) => {
       // The field, not our mirror - it's what the pre-flight check reads.
       const open = agent.pendingInterrupts;
       if (open.length === 0 || agent.isRunning || submittingRef.current) return;
-      if (open.some((i) => !decisions[i.id])) return; // still waiting on the rest
+
+      const target = open.find((i) => i.id === id);
+      if (!target) return; // a card outliving its interrupt
 
       // Expired throws pre-flight even with resume; unarm or nothing works again.
       if (open.some((i) => isInterruptExpired(i))) {
@@ -143,10 +120,7 @@ export function useChatInterrupts(
 
       let resume: ResumeEntry[];
       try {
-        const responses: Record<string, ResumeResponse> = {};
-        for (const i of open) responses[i.id] = toResponse(decisions[i.id]);
-        // Throws on an unknown id, inside a click handler React won't catch.
-        resume = buildResumeArray(open, responses);
+        resume = buildResumeArray(open, { [target.id]: toResponse(decision) });
       } catch (err) {
         unarm();
         reportError("interrupt", err);
@@ -155,34 +129,16 @@ export function useChatInterrupts(
 
       submittingRef.current = true;
       setSubmitting(true);
-      // Provisional until finalize.
-      submittedRef.current = open.map((i) => ({
-        interrupt: toChatInterrupt(i),
-        decision: decisions[i.id],
-      }));
 
-      // No synthetic tool result, unlike CopilotKit's useInterrupt - the agent emits
-      // TOOL_CALL_RESULT itself, and the applier doesn't dedupe by toolCallId.
+
+      putResolved([...resolvedRef.current, { interrupt: toChatInterrupt(target), decision }]);
+
       void copilotkit
         .runAgent({ agent, resume })
-        // runAgent already reports via onError; this only avoids an unhandled reject.
         .catch((err) => reportError("interrupt", err))
-        .finally(() => {
-          submittingRef.current = false;
-          setSubmitting(false);
-        });
+        .finally(stopSubmitting);
     },
-    [agent, copilotkit, unarm],
-  );
-
-  const answer = useCallback(
-    (id: string, decision: InterruptDecision) => {
-      if (submittingRef.current) return;
-      answersRef.current = { ...answersRef.current, [id]: decision };
-      setAnsweredIds(Object.keys(answersRef.current));
-      submit(answersRef.current);
-    },
-    [submit],
+    [agent, copilotkit, unarm, putResolved, stopSubmitting],
   );
 
   const getResolved = useCallback(() => resolvedRef.current, []);
@@ -195,5 +151,5 @@ export function useChatInterrupts(
     [putResolved],
   );
 
-  return { interrupts, resolved, answeredIds, submitting, answer, getResolved, adopt, clear };
+  return { interrupts, resolved, submitting, answer, getResolved, adopt, clear };
 }

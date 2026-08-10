@@ -10,7 +10,6 @@ export interface InterruptView {
 export interface InterruptActions {
   onApprove: (id: string) => void;
   onDeny: (id: string, reason?: string) => void;
-  answeredIds: ReadonlySet<string>;
   submitting: boolean;
 }
 

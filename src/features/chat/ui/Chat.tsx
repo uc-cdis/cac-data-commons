@@ -41,7 +41,6 @@ export function Chat({ agentId }: ChatProps) {
     interrupts,
     awaitingApproval,
     resolvedInterrupts,
-    answeredInterruptIds,
     interruptSubmitting,
     answerInterrupt,
   } = useChat({ agentId });
@@ -52,10 +51,9 @@ export function Chat({ agentId }: ChatProps) {
     () => ({
       onApprove: (id) => answerInterrupt(id, { approved: true }),
       onDeny: (id, reason) => answerInterrupt(id, { approved: false, reason }),
-      answeredIds: new Set(answeredInterruptIds),
       submitting: interruptSubmitting,
     }),
-    [answerInterrupt, answeredInterruptIds, interruptSubmitting],
+    [answerInterrupt, interruptSubmitting],
   );
 
   return (

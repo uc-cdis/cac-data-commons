@@ -34,8 +34,6 @@ export interface UseChatApi {
   awaitingApproval: boolean;
   /** Already decided, kept so the transcript still shows them. */
   resolvedInterrupts: ResolvedInterrupt[];
-  /** Answered but not yet sent, while the rest of the set is still open. */
-  answeredInterruptIds: string[];
   /** A decision is on the wire. */
   interruptSubmitting: boolean;
   /** Record a decision. The resume fires once every open approval has one. */
@@ -69,13 +67,11 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
   const clearError = useCallback(() => setError(null), []);
 
   const { timings, startTurn, reset: resetTimings } = useChatTimings(agent);
-  // Must stay above useChatPersistence. Effects run in call order, so this hook
-  // subscribes first and graduates the just-decided approval before persistence
-  // writes the row from that same event. Swap them and every plan saves a turn late.
+  // Stays above useChatPersistence because getResolvedInterrupts is an argument to
+  // it - the call order is pinned by the data flow, not by effect ordering.
   const {
     interrupts,
     resolved: resolvedInterrupts,
-    answeredIds: answeredInterruptIds,
     submitting: interruptSubmitting,
     answer: answerInterrupt,
     getResolved: getResolvedInterrupts,
@@ -280,7 +276,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     interrupts,
     awaitingApproval,
     resolvedInterrupts,
-    answeredInterruptIds,
     interruptSubmitting,
     answerInterrupt,
     editableMessageId,
