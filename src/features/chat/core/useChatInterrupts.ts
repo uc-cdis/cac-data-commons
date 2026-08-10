@@ -47,6 +47,7 @@ function toResponse(decision: InterruptDecision): ResumeResponse {
 export function useChatInterrupts(
   agent: AbstractAgent,
   copilotkit: CopilotKitCore,
+  model: string,
 ): UseChatInterrupts {
   // The agent outlives this hook; a remount can land on an armed approval.
   const [interrupts, setInterrupts] = useState<ChatInterrupt[]>(() =>
@@ -134,11 +135,11 @@ export function useChatInterrupts(
       putResolved([...resolvedRef.current, { interrupt: toChatInterrupt(target), decision }]);
 
       void copilotkit
-        .runAgent({ agent, resume })
+        .runAgent({ agent, resume, forwardedProps: { model } })
         .catch((err) => reportError("interrupt", err))
         .finally(stopSubmitting);
     },
-    [agent, copilotkit, unarm, putResolved, stopSubmitting],
+    [agent, copilotkit, unarm, putResolved, stopSubmitting, model],
   );
 
   const getResolved = useCallback(() => resolvedRef.current, []);

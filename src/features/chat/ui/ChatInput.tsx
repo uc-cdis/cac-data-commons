@@ -10,10 +10,10 @@ export interface ChatInputProps {
   onStop: () => void;
   label?: string;
   placeholder?: string;
+  models: readonly string[];
+  model: string;
+  onModelChange: (model: string) => void;
 }
-
-// Visual only. TODO: real model list, wired to the API.
-const MODEL_OPTIONS = [{ value: "openai:openai.gpt-oss-120b", label: "(On-Prem) GPT OSS 120B" }];
 
 export function ChatInput({
   isRunning,
@@ -22,6 +22,9 @@ export function ChatInput({
   onStop,
   label,
   placeholder,
+  models,
+  model,
+  onModelChange,
 }: ChatInputProps) {
   const [value, setValue] = useState("");
 
@@ -57,8 +60,9 @@ const send = () => {
       />
       <Group justify="space-between" wrap="nowrap">
         <Select
-          data={MODEL_OPTIONS}
-          defaultValue={MODEL_OPTIONS[0].value}
+          data={models}
+          value={model}
+          onChange={(next) => next && onModelChange(next)}
           allowDeselect={false}
           aria-label="Model"
           w={240}

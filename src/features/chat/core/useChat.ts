@@ -10,6 +10,7 @@ import type {
   Timings,
 } from "./types";
 import { toChatMessage, lastUserIndex } from "./utils";
+import { CHAT_MODELS, DEFAULT_CHAT_MODEL } from "./models";
 import { useChatTimings } from "./useChatTimings";
 import { useChatInterrupts } from "./useChatInterrupts";
 import { useChatPersistence } from "./useChatPersistence";
@@ -38,6 +39,12 @@ export interface UseChatApi {
   interruptSubmitting: boolean;
   /** Record a decision. The resume fires once every open approval has one. */
   answerInterrupt: (id: string, decision: InterruptDecision) => void;
+  /** Aliases the agent will accept. /ui reads the list through here rather than
+   *  importing it, which keeps useChat the only runtime import across the seam. */
+  models: readonly string[];
+  /** Sent as forwardedProps.model on every run. */
+  model: string;
+  setModel: (model: string) => void;
   /** The prompt Retry and Edit act on, or null when neither is allowed. */
   editableMessageId: string | null;
   retry: () => void;
@@ -59,6 +66,12 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
 
   const [error, setError] = useState<ChatError | null>(null);
   const [stopped, setStopped] = useState(false);
+  // addMessage pushes into the existing array, so the messages memo below can't see a
+  // prompt we added ourselves. Bumped from onNewMessage.
+  const [bufferRevision, setBufferRevision] = useState(0);
+  // Deliberately not persisted: per-chat would be a field on ChatRecord, global
+  // would be localStorage. Neither is worth it until the list stops being hardcoded.
+  const [model, setModel] = useState(DEFAULT_CHAT_MODEL);
 
   // Every reportError lands here. Registered ahead of the hooks below so it can't
   // miss what they report on mount.
@@ -77,7 +90,7 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     getResolved: getResolvedInterrupts,
     adopt: adoptInterrupts,
     clear: clearInterrupts,
-  } = useChatInterrupts(agent, copilotkit);
+  } = useChatInterrupts(agent, copilotkit, model);
   const { chats, loading: chatsLoading, refresh, rename, remove, clear } = useChatList();
   const { chatId, onUserMessage, newChat, openChat } =
     useChatPersistence(agent, refresh, getResolvedInterrupts);
@@ -99,6 +112,9 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
 
   useEffect(() => {
     const sub = agent.subscribe({
+      onNewMessage() {
+        setBufferRevision((r) => r + 1);
+      },
       onRunFailed({ error }) {
         reportError("run", error);
       },
@@ -132,17 +148,21 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
 
 
   // Translate the agent's buffer into our own shape, so /ui never sees an AG-UI
-  // or CopilotKit type.
+  // or CopilotKit type. Both deps are load-bearing: a run reassigns the array, a local
+  // addMessage only pushes into it.
   const messages = useMemo<ChatMessage[]>(
     () => agent.messages.flatMap(toChatMessage),
-    [agent.messages],
+    [agent.messages, bufferRevision],
   );
 
-  // Run whatever is in the buffer.
+  // Run whatever is in the buffer. forwardedProps is the only slot that survives the
+  // runtime's schema re-validation, which strips unknown top-level fields.
   const runCurrent = useCallback(() => {
     if (agent.pendingInterrupts.length > 0) return;
-    void copilotkit.runAgent({ agent }).catch((err) => reportError("run", err));
-  }, [agent, copilotkit]);
+    void copilotkit
+      .runAgent({ agent, forwardedProps: { model } })
+      .catch((err) => reportError("run", err));
+  }, [agent, copilotkit, model]);
 
 
   const sendMessage = useCallback(
@@ -278,6 +298,9 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     resolvedInterrupts,
     interruptSubmitting,
     answerInterrupt,
+    models: CHAT_MODELS,
+    model,
+    setModel,
     editableMessageId,
     retry,
     editAndRerun,

@@ -77,6 +77,7 @@ export function MessageList({
   }, []);
 
   // Deps: anything that changes the list's height, not just the messages.
+  // TODO: this doesn't seem to work
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;

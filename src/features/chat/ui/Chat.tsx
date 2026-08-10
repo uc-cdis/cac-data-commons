@@ -43,6 +43,9 @@ export function Chat({ agentId }: ChatProps) {
     resolvedInterrupts,
     interruptSubmitting,
     answerInterrupt,
+    models,
+    model,
+    setModel,
   } = useChat({ agentId });
 
   const isEmpty = messages.length === 0 && !isRunning;
@@ -82,6 +85,9 @@ export function Chat({ agentId }: ChatProps) {
                 onStop={stopRun}
                 label="What would you like to know?"
                 placeholder="Ask me a question about GDC data — example questions are available below."
+                models={models}
+                model={model}
+                onModelChange={setModel}
               />
               <EmptyState onSelect={sendMessage} disabled={isRunning} />
             </Stack>
@@ -124,6 +130,9 @@ export function Chat({ agentId }: ChatProps) {
                     ? BLOCKED_BY_APPROVAL
                     : "Ask me a question about GDC data ..."
                 }
+                models={models}
+                model={model}
+                onModelChange={setModel}
               />
             </Stack>
           </>
