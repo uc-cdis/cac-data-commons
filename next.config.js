@@ -45,6 +45,17 @@ const nextConfig = {
     config.infrastructureLogging = {
       level: 'error',
     };
+    // @copilotkit/react-core/v2 side-imports an 87KB Tailwind 4 stylesheet for
+    // CopilotKit's own React components. We render none of them - the chat UI is
+    // Mantine throughout - and Tailwind 3's PostCSS plugin dies on its bare
+    // `@layer base` ("no matching @tailwind base directive"). Resolve it to nothing.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      [path.resolve(
+        __dirname,
+        'node_modules/@copilotkit/react-core/dist/v2/index.css',
+      )]: false,
+    };
     return config;
   },
   async rewrites() {
@@ -76,6 +87,10 @@ const nextConfig = {
           source: '/ai-search/:path*',
           destination: `${GEN3_TARGET}/ai-search/:path*`,
         },
+        // Chat's payload cache. In production the portal shares a host with /qag, so this
+        // path is same-origin and the session cookie clears the revproxy on its own; here
+        // it isn't, which is why dev sends a bearer built from credentials_token instead.
+        { source: '/qag/:path*', destination: `${GEN3_TARGET}/qag/:path*` },
         {
           source: '/authz/:path*',
           destination: `${GEN3_TARGET}/authz/:path*`,
