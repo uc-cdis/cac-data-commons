@@ -40,8 +40,8 @@ export interface UseChatApi {
   interruptSubmitting: boolean;
   /** Record a decision. The resume fires once every open approval has one. */
   answerInterrupt: (id: string, decision: InterruptDecision) => void;
-  canRetry: boolean;
-  editableMessageId: string | null
+  /** The prompt Retry and Edit act on, or null when neither is allowed. */
+  editableMessageId: string | null;
   retry: () => void;
   editAndRerun: (text: string) => void;
   chatId: string;
@@ -186,10 +186,10 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
 
 
   const last = agent.messages[agent.messages.length - 1];
-  // An open approval leaves isRunning false, so without the guard Retry and Edit
-  // both light up next to the card and blow up on the pre-flight check.
-  const canRetry = !agent.isRunning && !awaitingApproval && last?.role === "user";
-  const editableMessageId = canRetry ? last.id : null;
+  // An open approval leaves isRunning false, so without that guard Retry and Edit both
+  // light up next to the card and blow up on the pre-flight check.
+  const editableMessageId =
+    !agent.isRunning && !awaitingApproval && last?.role === "user" ? last.id : null;
 
   const retry = useCallback(() => {
     if (agent.isRunning || awaitingApproval) return;
@@ -283,7 +283,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     answeredInterruptIds,
     interruptSubmitting,
     answerInterrupt,
-    canRetry,
     editableMessageId,
     retry,
     editAndRerun,

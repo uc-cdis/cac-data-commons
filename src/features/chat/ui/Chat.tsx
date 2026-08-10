@@ -16,6 +16,8 @@ export interface ChatProps {
   agentId?: string;
 }
 
+const BLOCKED_BY_APPROVAL = "Respond to the plan above to continue.";
+
 export function Chat({ agentId }: ChatProps) {
   const {
     messages,
@@ -116,14 +118,12 @@ export function Chat({ agentId }: ChatProps) {
 
               <ChatInput
                 isRunning={isRunning}
-                blockedReason={
-                  awaitingApproval ? "Respond to the plan above to continue." : undefined
-                }
+                blockedReason={awaitingApproval ? BLOCKED_BY_APPROVAL : undefined}
                 onSend={sendMessage}
                 onStop={stopRun}
                 placeholder={
                   awaitingApproval
-                    ? "Respond to the plan above to continue."
+                    ? BLOCKED_BY_APPROVAL
                     : "Ask me a question about GDC data ..."
                 }
               />

@@ -21,12 +21,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       data-role={message.role}
     >
       {isUser ? (
-  <Text size="sm" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-    {message.content}
-  </Text>
-) : (
-  <MarkdownContent content={message.content} />
-)}
+        <Text size="sm" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          {message.content}
+        </Text>
+      ) : (
+        <MarkdownContent content={message.content} />
+      )}
     </Paper>
   );
 }

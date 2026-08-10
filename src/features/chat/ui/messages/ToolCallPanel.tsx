@@ -68,20 +68,14 @@ export function ToolCallPanel({
                 {formatDuration(durationMs)}
               </Text>
             )}
-            {awaitingApproval ? (
-              null
-            ) : result ? (
-              <Badge color="teal" variant="light" leftSection={<IconCheck size={12} />}>
-                Completed
-              </Badge>
+            {awaitingApproval ? null : result ? (
+              <Badge color="teal" variant="light" leftSection={<IconCheck size={12} />} />
             ) : isRunning ? (
               <Badge color="blue" variant="light">
                 <Loader size={10} type="dots" />
               </Badge>
             ) : (
-              <Badge color="yellow" variant="light" leftSection={<IconAlertTriangle size={12} />}>
-                No result
-              </Badge>
+              <Badge color="yellow" variant="light" leftSection={<IconAlertTriangle size={12} />} />
             )}
             {isExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
           </Group>
@@ -100,8 +94,6 @@ export function ToolCallPanel({
             PARAMETERS
           </Text>
           {toolCall.args ? (
-            // Capped - one big payload would otherwise add thousands of pixels
-            // to the conversation's scroll height.
             <Code block mah={300} style={{ overflow: "auto" }}>
               {JSON.stringify(toolCall.args, null, 2)}
             </Code>
@@ -120,7 +112,8 @@ export function ToolCallPanel({
                 {formatJson(result)}
               </Code>
             </>
-          ) : awaitingApproval ? null : (
+          ) : (
+            !awaitingApproval &&
             !isRunning && (
               <Text size="xs" c="dimmed" mt="xs">
                 The run ended without a result for this call.

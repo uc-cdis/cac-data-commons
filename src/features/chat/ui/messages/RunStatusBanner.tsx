@@ -1,11 +1,21 @@
 import { Group, Loader, Text } from "@mantine/core";
+import { formatDuration } from "../util";
 
-export function RunStatusBanner({ isRunning, durationMs }: { isRunning: boolean; durationMs: number | null }) {
+/** Two call sites: the live footer under the transcript, and a finished turn's clock. */
+export function RunStatusBanner({
+  isRunning,
+  durationMs,
+}: {
+  isRunning: boolean;
+  durationMs: number | null;
+}) {
+  // A settled turn with no duration is a chat reloaded from IndexedDB - timings are
+  // in-memory only.
   const label = isRunning
     ? "Running..."
     : durationMs !== null
-      ? `Turn completed in ${(durationMs / 1000).toFixed(1)}s` // should use formatDuration
-      : "Turn completed"; // should we probably wrap it in a border or something?
+      ? `Turn completed in ${formatDuration(durationMs)}`
+      : "Turn completed";
 
   return (
     <Group gap="xs">

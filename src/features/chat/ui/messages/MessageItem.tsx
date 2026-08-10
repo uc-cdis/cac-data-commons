@@ -1,17 +1,16 @@
 "use client";
 
-import type { ChatInterrupt, ChatMessage, ResolvedInterrupt, Timings } from "../../core";
+import type { ChatMessage, Timings } from "../../core";
 import { ReasoningBlock } from "./ReasoningBlock";
 import { AssistantMessage } from "./AssistantMessage";
 import { UserMessage } from "./UserMessage";
-import type { InterruptActions } from "../interrupts";
+import type { InterruptActions, InterruptView } from "../interrupts";
 
 export interface MessageItemProps {
   message: ChatMessage;
   timings: Timings;
   toolResults: ReadonlyMap<string, string>;
-  interrupts: ReadonlyMap<string, ChatInterrupt>;
-  resolvedInterrupts: ReadonlyMap<string, ResolvedInterrupt>;
+  interrupts: ReadonlyMap<string, InterruptView>;
   interruptActions: InterruptActions;
   editableMessageId: string | null;
   isRunning: boolean;
@@ -26,7 +25,6 @@ export function MessageItem({
   timings,
   toolResults,
   interrupts,
-  resolvedInterrupts,
   interruptActions,
   editableMessageId,
   isRunning,
@@ -35,16 +33,16 @@ export function MessageItem({
   onRetry,
 }: MessageItemProps) {
   if (message.role === "user") {
-  return (
-    <UserMessage
-      message={message}
-      durationMs={timings.turns?.[message.id]}
-      canRewind={message.id === editableMessageId}
-      onEdit={onEdit}
-      onRetry={onRetry}
-    />
-  );
-}
+    return (
+      <UserMessage
+        message={message}
+        durationMs={timings.turns?.[message.id]}
+        canRewind={message.id === editableMessageId}
+        onEdit={onEdit}
+        onRetry={onRetry}
+      />
+    );
+  }
 
   if (message.role === "reasoning") {
     return (
@@ -56,10 +54,8 @@ export function MessageItem({
     );
   }
 
-  // Tool results are rendered inside their assistant message's ToolCallPanel.
-  if (message.role === "tool") {
-    return null;
-  }
+  // Tool results render inside their assistant message's ToolCallPanel.
+  if (message.role === "tool") return null;
 
   return (
     <AssistantMessage
@@ -67,7 +63,6 @@ export function MessageItem({
       timings={timings}
       toolResults={toolResults}
       interrupts={interrupts}
-      resolvedInterrupts={resolvedInterrupts}
       interruptActions={interruptActions}
       isRunning={isRunning}
     />

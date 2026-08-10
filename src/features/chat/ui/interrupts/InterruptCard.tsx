@@ -44,7 +44,6 @@ export function InterruptCard({
   const Body = entry?.Body ?? GenericInterruptBody;
   const answered = answeredIds.has(interrupt.id);
 
-  // null = revise composer closed. "" = open and empty.
   const [revision, setRevision] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
 
@@ -77,17 +76,11 @@ export function InterruptCard({
             </Group>
             <Group gap="xs" wrap="nowrap">
               {decision.approved ? (
-                <Badge color="teal" variant="light" leftSection={<IconCheck size={12} />}>
-                  Approved
-                </Badge>
+                <Badge color="teal" variant="light" leftSection={<IconCheck size={12} />} />
               ) : decision.reason ? (
-                <Badge color="orange" variant="light" leftSection={<IconPencil size={12} />}>
-                  Changes requested
-                </Badge>
+                <Badge color="orange" variant="light" leftSection={<IconPencil size={12} />} />
               ) : (
-                <Badge color="red" variant="light" leftSection={<IconX size={12} />}>
-                  Denied
-                </Badge>
+                <Badge color="red" variant="light" leftSection={<IconX size={12} />} />
               )}
               {expanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
             </Group>
@@ -110,7 +103,6 @@ export function InterruptCard({
   return (
     <Paper withBorder radius="sm" p="sm" bg="var(--mantine-color-body)">
       <Stack gap="sm">
-        {/* Never collapsible while open - you have to read it to decide. */}
         <Group gap="xs" wrap="nowrap">
           <IconRoute size={16} color="var(--mantine-primary-color-light-color)" />
           <Text size="sm" fw={600}>
@@ -126,6 +118,7 @@ export function InterruptCard({
           </Text>
         ) : revision === null ? (
           <Group justify="flex-end" gap="xs">
+            {/* Deny and Edit plan are hidden for now.
             <Button
               size="xs"
               variant="subtle"
@@ -144,6 +137,7 @@ export function InterruptCard({
             >
               Edit plan
             </Button>
+            */}
             <Button size="xs" loading={submitting} onClick={() => onApprove(interrupt.id)}>
               Approve
             </Button>

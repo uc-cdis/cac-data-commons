@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type Key } from "react";
+import { memo, useMemo, type Key } from "react";
 import {
   CartesianGrid,
   Label,
@@ -77,7 +77,7 @@ function SurvivalTooltip({
   );
 }
 
-export function SurvivalPlot({
+export const SurvivalPlot = memo(function SurvivalPlot({
   curve,
   height = 300,
 }: {
@@ -139,4 +139,4 @@ export function SurvivalPlot({
       </LineChart>
     </ResponsiveContainer>
   );
-}
+});

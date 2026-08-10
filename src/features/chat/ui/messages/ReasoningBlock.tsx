@@ -10,14 +10,10 @@ export function ReasoningBlock({
 }: {
   content: string;
   durationMs?: number;
-  /** This block is the one currently being written. */
   isStreaming: boolean;
 }) {
   const [opened, setOpened] = useState(false);
 
-  // Three states, not two. A missing duration used to mean "still thinking", but
-  // timings are in-memory only, so every block in a chat reloaded from IndexedDB
-  // claimed to be thinking forever.
   const label =
     durationMs !== undefined
       ? `Thought for ${formatDuration(durationMs)}`

@@ -19,8 +19,6 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
   const isDesktop = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
   const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure(false);
 
-  // The burger is hidden past sm, so a drawer left open across a resize would
-  // have no way to be dismissed.
   useEffect(() => {
     if (isDesktop && mobileOpened) closeMobile();
   }, [isDesktop, mobileOpened, closeMobile]);

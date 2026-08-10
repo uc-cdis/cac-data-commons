@@ -3,9 +3,6 @@ import type { InterruptRendererEntry } from "./types";
 import { RewooPlanBody } from "./rewoo/RewooPlanBody";
 import { parseRewooPlan } from "./rewoo/parse";
 
-// Keyed on the agent's approval taxonomy. Not `reason` - always "tool_call", so
-// it'd be a boolean wearing a Record - and not the tool name, since the same
-// rewoo_plan approval arrives as both run_query and start_rewoo.
 const interruptRenderers: Record<string, InterruptRendererEntry | undefined> = {
   rewoo_plan: {
     Body: RewooPlanBody,

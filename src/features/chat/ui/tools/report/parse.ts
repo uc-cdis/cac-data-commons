@@ -2,9 +2,7 @@
 // Same discipline as ../survival/parse.ts.
 
 export interface AgentReport {
-  /** Markdown. The agent's full working - problem, evidence table, conclusion. */
   answer: string;
-  /** "SOLVED" on the runs we've seen. Anything else is worth surfacing. */
   status: string | null;
 }
 
@@ -26,8 +24,6 @@ export function parseAgentReport(content: string): ParseResult {
   if (!isRecord(raw)) return { ok: false, reason: "not an object" };
 
   const answer = raw.answer;
-  // A deny puts the user's feedback text here instead of a report, and a failed
-  // run may carry no answer at all. Neither is ours to render.
   if (typeof answer !== "string" || answer.trim().length === 0) {
     return { ok: false, reason: "no answer" };
   }

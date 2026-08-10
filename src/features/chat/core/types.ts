@@ -43,7 +43,7 @@ export interface Timings {
 
 /**
  * An approval the agent parked on mid-run. Until it's answered the agent refuses
- * every run, so an interrupt the UI can't render is a chat the user can't use.
+ * every run.
  */
 export interface ChatInterrupt {
     id: string;
