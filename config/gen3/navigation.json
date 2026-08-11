@@ -33,12 +33,6 @@
         "tooltip": "Gen3 workspaces are secure data analysis environments in the cloud that can access data from one or more data resources."
       },
       {
-        "icon": "gen3:aisearch",
-        "href": "/Chat",
-        "name": "Chat",
-        "tooltip": "Ask questions about the data in natural language using an AI assistant."
-      },
-      {
         "icon": "gen3:profile",
         "href": "/Profile",
         "name": "Profile",

@@ -1,14 +1,24 @@
 {
   "tools": [
     {
-      "title": "GDC QAG",
+      "title": "GDC QAG (v2)",
+      "type": "application",
+      "icon": "/images/apps/icons/ai_spark.svg",
+      "image": "/images/apps/gdc_qag_gray.png",
+      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC.",
+      "loginRequired": true,
+      "href": "/embedded/genomicaicommons.org/qag",
+      "btnText": "Run Chat"
+    },
+    {
+      "title": "GDC QAG (v3)",
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag.png",
       "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC.",
       "loginRequired": true,
-      "href": "/embedded/genomicaicommons.org/qag",
-      "btnText": "Run Model"
+      "href": "/Chat",
+      "btnText": "Run Chat"
     },
     {
       "title": "Cohort Copilot",
