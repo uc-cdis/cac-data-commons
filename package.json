@@ -28,7 +28,7 @@
     "build:jupyterlite:remote": "bash ./node_modules/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh remote ./builds",
     "build:jupyterlite:assets": "bash ./node_modules/@gen3/workspaces/dist/jupyterlite-builds/scripts/sync-jupyter-assets-into-package.sh ./builds",
     "build:jupyterlite": "npm run build:jupyterlite:free && npm run build:jupyterlite:remote && npm run build:jupyterlite:assets",
-    "build:docker": "docker build -t gen3:mc2dp -f Dockerfile.production ."
+    "build:docker": "docker build -t gen3:gac -f Dockerfile.production ."
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.57",
