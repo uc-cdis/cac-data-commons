@@ -1,23 +1,23 @@
 {
   "tools": [
     {
-      "title": "GDC QAG (v2)",
+      "title": "GDC QAG (v2 - legacy)",
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag.png",
-      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC.",
+      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC. For the latest, visit the GAC (TODO link)",
       "loginRequired": true,
       "href": "/embedded/m3aicommons.org/qag/v2",
       "btnText": "Run Model"
     },
     {
-      "title": "GDC QAG (v3)",
+      "title": "GDC S&R MCP",
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag.png",
-      "description": "GDC QAG with reduced token usage and user-gated plan approval and execution.",
+      "description": "GDC Search and Retrieval MCP demo.",
       "loginRequired": true,
-      "href": "/embedded/m3aicommons.org/qag/v3",
+      "href": "/embedded/m3aicommons.org/qag/sr-chat",
       "btnText": "Run Model"
     },
     {
