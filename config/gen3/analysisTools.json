@@ -5,7 +5,7 @@
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag.png",
-      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC. For the latest, visit the GAC (TODO link)",
+      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC. For the latest, visit the GAC!",
       "loginRequired": true,
       "href": "/embedded/m3aicommons.org/qag/v2",
       "btnText": "Run Model"
