@@ -1,6 +1,6 @@
 {
-  "name": "@gen3/commons-portal-app-base",
-  "version": "0.12.56",
+  "name": "@gen3/genomic-ai-data-commons",
+  "version": "0.12.57",
   "private": "true",
   "engines": {
     "npm": ">=11.16.0",
@@ -38,9 +38,9 @@
     "@fontsource/montserrat": "^5.2.8",
     "@fontsource/poppins": "^5.2.7",
     "@fontsource/source-sans-pro": "^5.2.5",
-    "@gen3/core": "0.12.56",
-    "@gen3/frontend": "0.12.56",
-    "@gen3/workspaces": "0.12.56",
+    "@gen3/core": "0.12.57",
+    "@gen3/frontend": "0.12.57",
+    "@gen3/workspaces": "0.12.57",
     "@mantine/core": "^9.4.0",
     "@mantine/dates": "^9.4.0",
     "@mantine/form": "^9.4.0",
@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "@axe-core/react": "^4.10.2",
-    "@gen3/toolsff": "0.12.56",
+    "@gen3/toolsff": "0.12.57",
     "@graphiql/react": "^0.37.4",
     "@next/eslint-plugin-next": "^15.5.9",
     "@tailwindcss/aspect-ratio": "^0.4.2",
