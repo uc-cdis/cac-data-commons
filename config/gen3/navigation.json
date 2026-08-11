@@ -57,11 +57,6 @@
     },
     "items": [
       {
-        "rightIcon": "gen3:upload",
-        "href": "/Submission",
-        "name": "Browse Data"
-      },
-      {
         "href": "https://docs.gen3.org/",
         "name": "Documentation"
       }
