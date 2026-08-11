@@ -65,7 +65,11 @@ RUN mkdir -p .next/standalone/.next/cache/images && \
     chmod -R 777 .next/standalone/.next/cache && \
     chown -R nextjs:nextjs .next/standalone/.next/cache && \
     chmod +x start.sh && \
-    chown -R nextjs:nextjs start.sh
+    chown -R nextjs:nextjs start.sh && \
+    rm -rf .next/standalone/config && \
+    cd .next/standalone && \
+    ln -s ../../config ./config && \
+    ln -s ../../public ./public
 
 USER nextjs:nextjs
 
