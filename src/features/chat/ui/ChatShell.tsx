@@ -41,6 +41,8 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
 
   return (
     <Box
+      // Marker for the one global rule that gives this page a definite height.
+      data-chat-shell
       pb="md"
       mih={0}
       miw={0}

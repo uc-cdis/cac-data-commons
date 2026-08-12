@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useIsomorphicEffect } from "@mantine/hooks";
 import type {
@@ -88,10 +88,6 @@ export function MessageList({
   }, [interruptKey]);
 
   const lastMessageId = lastMessage?.id ?? null;
-  const seenWhileFollowingRef = useRef(lastMessageId);
-  useEffect(() => {
-    if (following) seenWhileFollowingRef.current = lastMessageId;
-  }, [following, lastMessageId]);
 
   const toolResults = useMemo(() => {
     const map = new Map<string, string>();
@@ -136,13 +132,6 @@ export function MessageList({
     }
     return map;
   }, [interrupts, resolvedInterrupts]);
-
-  const jumpLabel =
-    interrupts.length > 0
-      ? "Approval needed"
-      : lastMessageId !== seenWhileFollowingRef.current
-        ? "New messages"
-        : "Jump to latest";
 
   return (
     <Box
@@ -201,13 +190,7 @@ export function MessageList({
         </Stack>
       </ScrollArea>
 
-      {!following && (
-        <JumpToLatest
-          label={jumpLabel}
-          blocked={interrupts.length > 0}
-          onClick={() => scrollToBottom()}
-        />
-      )}
+      {!following && <JumpToLatest onClick={() => scrollToBottom()} />}
     </Box>
   );
 }

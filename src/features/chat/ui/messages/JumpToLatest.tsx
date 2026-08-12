@@ -1,30 +1,26 @@
 "use client";
 
-import { Button } from "@mantine/core";
+import { ActionIcon } from "@mantine/core";
 import { IconArrowDown } from "@tabler/icons-react";
 
 export interface JumpToLatestProps {
-  label: string;
-  blocked?: boolean;
   onClick: () => void;
 }
 
-export function JumpToLatest({ label, blocked, onClick }: JumpToLatestProps) {
+export function JumpToLatest({ onClick }: JumpToLatestProps) {
   return (
-    <Button
+    <ActionIcon
       onClick={onClick}
-      aria-label={label}
-      size="xs"
+      aria-label="Scroll to latest"
+      variant="default"
       radius="xl"
-      variant={blocked ? "filled" : "default"}
-      color={blocked ? "orange" : undefined}
-      leftSection={<IconArrowDown size={14} />}
+      size="lg"
       pos="absolute"
       bottom={12}
-      left="50%"
-      style={{ transform: "translateX(-50%)", boxShadow: "var(--mantine-shadow-md)" }}
+      right={16}
+      style={{ boxShadow: "var(--mantine-shadow-md)" }}
     >
-      {label}
-    </Button>
+      <IconArrowDown size={18} />
+    </ActionIcon>
   );
 }
