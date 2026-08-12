@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { GEN3_FENCE_API } from '@gen3/core';
+import { GEN3_FENCE_SERVICE } from '@gen3/core';
 import { serialize } from 'cookie';
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
@@ -12,7 +12,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         `access_token=${encodeURIComponent(req.cookies.access_token)}`,
     ].filter((cookie): cookie is string => Boolean(cookie));
 
-    const fenceResponse = await fetch(`${GEN3_FENCE_API}/logout`, {
+    const fenceResponse = await fetch(`${GEN3_FENCE_SERVICE}/logout`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
