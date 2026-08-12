@@ -20,7 +20,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     const fenceResponse = await fetch(`${GEN3_FENCE_SERVICE}/logout`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'test/html',
+        'Content-Type': 'text/html',
         ...(fenceCookies.length > 0 ? { Cookie: fenceCookies.join('; ') } : {}),
       },
       redirect: 'manual',
