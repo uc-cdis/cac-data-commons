@@ -1,13 +1,13 @@
 {
   "tools": [
     {
-      "title": "GDC QAG (v2)",
+      "title": "GDC QAG (v2 - legacy)",
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag_gray.png",
       "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC.",
       "loginRequired": true,
-      "href": "/embedded/genomicaicommons.org/qag",
+      "href": "/embedded/genomicaicommons.org/qag/v2",
       "btnText": "Run Chat"
     },
     {
@@ -15,7 +15,7 @@
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/gdc_qag.png",
-      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC.",
+      "description": "Get specific answers to complex, multi-step, free-text genomics questions using factually grounded information retrieved from the GDC. Now with reduced token usage and user-gated plan approval and execution.",
       "loginRequired": true,
       "href": "/Chat",
       "btnText": "Run Chat"
@@ -28,7 +28,7 @@
       "description": " Construct GDC cohorts using natural language queries describing the cases you're looking for. The resulting cohorts can be used with standard GDC utilities and APIs.",
       "loginRequired": true,
       "href": "/embedded/genomicaicommons.org/cohort-copilot",
-      "btnText": "Run Model"
+      "btnText": "Run Builder"
     },
     {
       "title": "GDC S&R MCP",
