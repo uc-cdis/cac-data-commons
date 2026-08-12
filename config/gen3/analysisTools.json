@@ -31,14 +31,14 @@
       "btnText": "Run Model"
     },
     {
-      "title": "Data Model Generator",
+      "title": "GDC S&R MCP",
       "type": "application",
       "icon": "/images/apps/icons/ai_spark.svg",
       "image": "/images/apps/data_model_generator.png",
-      "description": "AI tool to assist with data curation and harmonization. This model is a fined-tuned LoRA layer based on Llama-3.1-8B that is optimized for the specific task of generating structured data models in JSON format from a dump of tabular data files.",
+      "description": "GDC Search and Retrieval MCP demo.",
       "loginRequired": true,
-      "href": "/embedded/uc-ctds-llama-data-model-generator-demo.hf.space?type=gradio",
-      "btnText": "Run Model"
+      "href": "/embedded/genomicaicommons.org/qag/sr-chat",
+      "btnText": "Run Chat"
     }
   ]
 }
