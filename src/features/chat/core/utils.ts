@@ -59,7 +59,7 @@ function parseArgs(raw: string): Record<string, unknown> | null {
 
 /**
  * get_survival_data JSON-encodes an MCP content-block array into its result string. Peel it
- * once - anything else passes through untouched. Why here, and why no memo: see AGENTS.md.
+ * once - anything else passes through untouched.
  */
 function unwrapToolResult(content: string): string {
   if (!content.startsWith("[")) return content; // free reject: results are objects or prose

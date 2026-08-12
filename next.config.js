@@ -9,7 +9,6 @@ const path = require('path');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { withJupyterWorkspaces } = require('@gen3/workspaces/server');
 
-const basePath = process.env.NEXT_PUBLIC_BASEPATH;
 
 dns.setDefaultResultOrder('ipv4first');
 
@@ -70,12 +69,21 @@ const nextConfig = {
         destination: '/icons/kernels/logo-64.png',
       },
     ];
+    // The revproxy gives /api/ to sheepdog, so /api/copilotkit never reaches us; serve
+    // the runtime off a path `location /` already routes here.
+    const chatRuntimeRewrite = [
+      {
+        source: '/copilot-runtime',
+        destination: '/api/copilotkit',
+      },
+    ];
     if (isDev) {
       const GEN3_TARGET =
         process.env.NEXT_PUBLIC_GEN3_API_TARGET || 'https://localhost';
 
       return [
         ...workspaceApiRewrite,
+        ...chatRuntimeRewrite,
         { source: '/_status', destination: `${GEN3_TARGET}/_status` },
         { source: '/user/:path*', destination: `${GEN3_TARGET}/user/:path*` },
         {
@@ -127,7 +135,7 @@ const nextConfig = {
         },
       ];
     } else {
-      return workspaceApiRewrite;
+      return [...workspaceApiRewrite, ...chatRuntimeRewrite];
     }
   },
   async headers() {

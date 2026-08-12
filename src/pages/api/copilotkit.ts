@@ -7,7 +7,7 @@ import { getCopilotRuntime } from '@/lib/copilot/runtime';
 // stream, so the runtime finds no body and every call 400s.
 export const config = { api: { bodyParser: true } };
 
-const ENDPOINT = '/api/copilotkit';
+const ENDPOINT = '/copilot-runtime';
 
 // CopilotKit probes for the agent list on every page load, which 401d for
 // logged-out visitors. Safe anonymously: `info` only enumerates the agents map.
