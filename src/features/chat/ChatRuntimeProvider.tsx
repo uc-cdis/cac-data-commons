@@ -1,8 +1,9 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
+import { useGetCSRFQuery } from '@gen3/core';
 import Loading from '@/components/Loading';
 
 const ChatProvider = dynamic(
@@ -12,9 +13,16 @@ const ChatProvider = dynamic(
 
 export function ChatRuntimeProvider({ children }: { children: ReactNode }) {
   const { basePath } = useRouter();
+  const { data } = useGetCSRFQuery();
+  const csrfToken = data?.csrfToken;
+
+  const headers = useMemo(
+    () => (csrfToken ? { 'X-CSRF-Token': csrfToken } : undefined),
+    [csrfToken],
+  );
 
   return (
-    <ChatProvider runtimeUrl={`${basePath}/api/copilotkit`}>
+    <ChatProvider runtimeUrl={`${basePath}/copilot-runtime`} headers={headers}>
       {children}
     </ChatProvider>
   );
