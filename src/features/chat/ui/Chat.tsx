@@ -99,7 +99,7 @@ export function Chat({ agentId }: ChatProps) {
               isRunning={isRunning}
               timings={timings}
               stopped={stopped}
-              hasError={error !== null}
+              chatId={chatId}
               interrupts={interrupts}
               resolvedInterrupts={resolvedInterrupts}
               interruptActions={interruptActions}

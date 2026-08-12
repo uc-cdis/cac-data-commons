@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { ScrollArea, Stack, Text } from "@mantine/core";
+import { useEffect, useMemo, useRef } from "react";
+import { Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { useIsomorphicEffect } from "@mantine/hooks";
 import type {
   ChatInterrupt,
   ChatMessage,
@@ -11,6 +12,8 @@ import type {
 } from "../../core";
 import { MessageItem } from "./MessageItem";
 import { RunStatusBanner } from "./RunStatusBanner";
+import { JumpToLatest } from "./JumpToLatest";
+import { useStickToBottom } from "./useStickToBottom";
 import type { InterruptActions, InterruptView } from "../interrupts";
 import { ToolResultCard, isTrailingTool } from "../tools";
 import { CHAT_MAX_WIDTH } from "../util";
@@ -20,7 +23,7 @@ export interface MessageListProps {
   isRunning: boolean;
   timings: Timings;
   stopped: boolean;
-  hasError: boolean;
+  chatId: string;
   interrupts: ChatInterrupt[];
   resolvedInterrupts: ResolvedInterrupt[];
   interruptActions: InterruptActions;
@@ -28,8 +31,6 @@ export interface MessageListProps {
   onRetry: () => void;
   onEdit: (text: string) => void;
 }
-
-const STICK_THRESHOLD_PX = 80;
 
 type Row =
   | { kind: "message"; key: string; message: ChatMessage }
@@ -56,7 +57,7 @@ export function MessageList({
   isRunning,
   timings,
   stopped,
-  hasError,
+  chatId,
   interrupts,
   resolvedInterrupts,
   interruptActions,
@@ -64,35 +65,33 @@ export function MessageList({
   onRetry,
   onEdit,
 }: MessageListProps) {
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const stickRef = useRef(true);
-  const lastPromptRef = useRef<string | null>(null);
-  const lastInterruptRef = useRef<string | null>(null);
+  const { viewportRef, contentRef, onScrollPositionChange, following, scrollToBottom } =
+    useStickToBottom();
 
-  const handleScrollPositionChange = useCallback(({ y }: { y: number }) => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    stickRef.current =
-      viewport.scrollHeight - y - viewport.clientHeight < STICK_THRESHOLD_PX;
-  }, []);
+  const lastMessage = messages[messages.length - 1];
+  const promptId = lastMessage?.role === "user" ? lastMessage.id : null;
+  // Every open id, not interrupts[0] - that one never re-jumped for a second approval.
+  const interruptKey = interrupts.map((i) => i.id).join(",");
 
-  // Deps: anything that changes the list's height, not just the messages.
-  // TODO: this doesn't seem to work
+  // Three things override the user's scroll position: their own prompt, an approval
+  // that blocks the composer, and switching conversations.
+  useIsomorphicEffect(() => {
+    scrollToBottom("auto");
+  }, [chatId]);
+
+  useIsomorphicEffect(() => {
+    if (promptId) scrollToBottom("auto");
+  }, [promptId]);
+
+  useIsomorphicEffect(() => {
+    if (interruptKey) scrollToBottom("auto");
+  }, [interruptKey]);
+
+  const lastMessageId = lastMessage?.id ?? null;
+  const seenWhileFollowingRef = useRef(lastMessageId);
   useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    // Follow the bottom again for a new prompt or a new approval
-    const jumpIfNew = (id: string | null, lastSeen: { current: string | null }) => {
-      if (id !== null && id !== lastSeen.current) stickRef.current = true;
-      lastSeen.current = id;
-    };
-    const last = messages[messages.length - 1];
-    jumpIfNew(last?.role === "user" ? last.id : null, lastPromptRef);
-    jumpIfNew(interrupts[0]?.id ?? null, lastInterruptRef);
-
-    if (stickRef.current) viewport.scrollTo({ top: viewport.scrollHeight });
-  }, [messages, stopped, hasError, editableMessageId, interrupts]);
+    if (following) seenWhileFollowingRef.current = lastMessageId;
+  }, [following, lastMessageId]);
 
   const toolResults = useMemo(() => {
     const map = new Map<string, string>();
@@ -138,51 +137,77 @@ export function MessageList({
     return map;
   }, [interrupts, resolvedInterrupts]);
 
-  const lastMessageId = messages[messages.length - 1]?.id ?? null;
+  const jumpLabel =
+    interrupts.length > 0
+      ? "Approval needed"
+      : lastMessageId !== seenWhileFollowingRef.current
+        ? "New messages"
+        : "Jump to latest";
 
   return (
-    <ScrollArea
-      flex={1}
-      mih={0}
-      type="auto"
-      viewportRef={viewportRef}
-      onScrollPositionChange={handleScrollPositionChange}
+    <Box
+      pos="relative"
+      style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}
     >
-      <Stack gap="md" px="lg" py="md" maw={CHAT_MAX_WIDTH} mx="auto" w="100%">
-        {rows.map((row) =>
-          row.kind === "message" ? (
-            <MessageItem
-              key={row.key}
-              message={row.message}
-              timings={timings}
-              toolResults={toolResults}
-              interrupts={byToolCall}
-              interruptActions={interruptActions}
-              editableMessageId={editableMessageId}
-              isRunning={isRunning}
-              isLast={row.message.id === lastMessageId}
-              onEdit={onEdit}
-              onRetry={onRetry}
-            />
-          ) : (
-            <ToolResultCard
-              key={row.key}
-              toolCall={row.toolCall}
-              result={toolResults.get(row.toolCall.id) ?? null}
-              isRunning={isRunning}
-              trailing
-            />
-          ),
-        )}
+      <ScrollArea
+        flex={1}
+        mih={0}
+        type="auto"
+        viewportRef={viewportRef}
+        onScrollPositionChange={onScrollPositionChange}
+      >
+        <Stack
+          ref={contentRef}
+          gap="md"
+          px="lg"
+          py="md"
+          maw={CHAT_MAX_WIDTH}
+          mx="auto"
+          w="100%"
+        >
+          {rows.map((row) =>
+            row.kind === "message" ? (
+              <MessageItem
+                key={row.key}
+                message={row.message}
+                timings={timings}
+                toolResults={toolResults}
+                interrupts={byToolCall}
+                interruptActions={interruptActions}
+                editableMessageId={editableMessageId}
+                isRunning={isRunning}
+                isLast={row.message.id === lastMessageId}
+                onEdit={onEdit}
+                onRetry={onRetry}
+              />
+            ) : (
+              <ToolResultCard
+                key={row.key}
+                toolCall={row.toolCall}
+                result={toolResults.get(row.toolCall.id) ?? null}
+                isRunning={isRunning}
+                trailing
+              />
+            ),
+          )}
 
-        {isRunning && <RunStatusBanner isRunning durationMs={null} />}
+          {isRunning && <RunStatusBanner isRunning durationMs={null} />}
 
-        {!isRunning && stopped && (
-          <Text size="xs" c="dimmed">
-            You stopped this response.
-          </Text>
-        )}
-      </Stack>
-    </ScrollArea>
+          {!isRunning && stopped && (
+            <Text size="xs" c="dimmed">
+              You stopped this response.
+            </Text>
+          )}
+        </Stack>
+      </ScrollArea>
+
+      {!following && (
+        <JumpToLatest
+          label={jumpLabel}
+          blocked={interrupts.length > 0}
+          onClick={() => scrollToBottom()}
+        />
+      )}
+    </Box>
   );
 }
