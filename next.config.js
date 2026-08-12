@@ -39,7 +39,14 @@ const nextConfig = {
     fetches: {
       fullUrl: true,
     },
+    browserToTerminal: true,
+    serverFunctions: true,
+    incomingRequests: true,
   },
+  compiler: {
+    removeConsole: false,
+  },
+
   webpack: (config, { dev }) => {
     config.infrastructureLogging = {
       level: 'error',
